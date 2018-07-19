@@ -21,7 +21,7 @@ def main():
 	objp = np.zeros((PATTERN_SIZE[0]*PATTERN_SIZE[1], 3), np.float32) 
 	objp[:, :2] = np.mgrid[0:PATTERN_SIZE[0], 0:PATTERN_SIZE[1]].T.reshape(-1, 2)
 
-	filelist = glob.glob("camera_cal/*.jpg")
+	filelist = glob.glob('camera_cal/*.jpg')
 	for filename in filelist:
 		img  = cv2.imread(filename)
 		gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -36,13 +36,13 @@ def main():
 	ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 	dist_pickle = {}
-	dist_pickle["mtx"] = mtx
-	dist_pickle["dist"] = dist
-	pickle.dump(dist_pickle, open("camera_dist_pickle.p", "wb"))
+	dist_pickle['mtx'] = mtx
+	dist_pickle['dist'] = dist
+	pickle.dump(dist_pickle, open('camera_dist_pickle.p', 'wb'))
 
 	# calc re-projection error
 	mean_error = calc_reprojection_error(imgpoints, objpoints, mtx, dist, rvecs, tvecs)
-	print("re-projection error: {}".format(mean_error / len(objpoints)))
+	print('re-projection error: {}'.format(mean_error / len(objpoints)))
 
 
 if __name__ == '__main__':
