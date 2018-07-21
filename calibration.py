@@ -38,7 +38,9 @@ def main():
 	dist_pickle = {}
 	dist_pickle['mtx'] = mtx
 	dist_pickle['dist'] = dist
-	pickle.dump(dist_pickle, open('camera_dist_pickle.p', 'wb'))
+	f = open('camera_dist_pickle.p', 'wb')
+	pickle.dump(dist_pickle, f)
+	f.close()
 
 	# calc re-projection error
 	mean_error = calc_reprojection_error(imgpoints, objpoints, mtx, dist, rvecs, tvecs)
