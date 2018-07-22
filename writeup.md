@@ -1,6 +1,4 @@
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+## Advanced Lane Finding
 
 ---
 
@@ -19,7 +17,8 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/undistort_output.png "Undistorted"
+[image0]: ./camera_cal/calibration1.jpg "Original"
+[image1]: ./output_images/calibration1_undistort.png "Undistorted"
 [image2]: ./test_images/test1.jpg "Road Transformed"
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
 [image4]: ./examples/warped_straight_lines.jpg "Warp Example"
@@ -29,29 +28,45 @@ The goals / steps of this project are the following:
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
-
 ---
-
-### Writeup / README
-
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
-
-You're reading it!
 
 ### Camera Calibration
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/example.ipynb" (or in lines # through # of the file called `some_file.py`).  
+The code for this step is contained in `calibration.py`.  
+I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  
+Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection. And, I used `cv2.cornerSubPix()` to find more exact corner positions. Here is an example image of result of detected chessboard corners.
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+<img src=./output_images/chessboard_corners.png width="400">
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![alt text][image1]
+| ![][image0] | ![][image1] |
+|:--:|:--:|
+| input | output |
+
+And, I calculated `Re-projection Error` using `cv2.projectPoints()`.  
+Here is a code to calculate `Re-projection Error`.
+
+```python
+def calc_reprojection_error(imgpoints, objpoints, mtx, dist, rvecs, tvecs):
+	mean_error = 0
+	for i in range(len(objpoints)):
+		imgpoints_, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+		error = cv2.norm(imgpoints[i], imgpoints_, cv2.NORM_L2) / len(imgpoints_)
+		mean_error += error
+	return mean_error
+```
 
 ### Pipeline (single images)
+My pipeline consisted of 5 steps.
+
+1. Distortion correction
+1. Color/gradient threshold
+1. Perspective transform
+1. Detect lane lines
+1. Determine the lane curvature
 
 #### 1. Provide an example of a distortion-corrected image.
 
@@ -125,3 +140,8 @@ Here's a [link to my video result](./project_video.mp4)
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+
+---
+
+## Reference
+- [OpenCV: Camera Calibration](https://docs.opencv.org/3.4.2/dc/dbb/tutorial_py_calibration.html)
