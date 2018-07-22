@@ -229,9 +229,48 @@ Here's a [link to my video result](./output_images/project_video.mp4).
 
 ---
 
-### Discussion
+## Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+
+#### Faced problems
+I tried `challenge_video.mp4`. As a result, I was faced with some problem
+
+In this case, my pipeline judges cracks of road as lanes.
+
+<img src=./output_images/NG1.png width="400">
+
+This cracks has the edge of vertical direction. This is the cause of failure to track the curvature using sliding windows.
+
+<img src=./output_images/NG1_out_img.png width="400">
+
+In this case, my pipeline can not fit the left lane properly.
+
+<img src=./output_images/NG2.png width="400">
+
+I checked the result to track the curvature. As a result, I think that information for fitting is insufficient.
+
+<img src=./output_images/NG2_out_img.png width="400">
+
+And, I checked binary image. I found that shadowed lane region can not be extracted.
+
+<img src=./output_images/NG2_binary.png width="400">
+
+#### Identification of potential shortcomings
+I think that my current pipeline has shortcoming in the following condition.
+
+1. Weak to outliers
+    - Current pipeline does not remove outliers. So, current pipeline is weak to outliers.
+    - Current pipeline uses only current frame. So, current pipeline is weak to outliers.
+1. Change of illumination condition
+    - Current pipeline uses color information to extract lane. But, lane can not be extracted correctly when illumination condition changes.
+
+#### Suggestion of possible improvements
+I suggest improvements to overcome mentioned shortcomings.
+
+1. Removal of outliers
+1. Use from prior frame
+1. Use other colorspace
 
 ---
 
