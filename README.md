@@ -20,10 +20,12 @@ The goals / steps of this project are the following:
 ## Dependencies
 This lab requires:
 
+* Python 3
 * NumPy
 * OpenCV
 
 ## Materials
-* calibration.py
-* lane_detection.py
-* writeup.md
+* [calibration.py](https://github.com/atinfinity/CarND-Advanced-Lane-Lines/blob/master/calibration.py)
+* [lane_detection.py](https://github.com/atinfinity/CarND-Advanced-Lane-Lines/blob/master/lane_detection.py)
+* [writeup.md](https://github.com/atinfinity/CarND-Advanced-Lane-Lines/blob/master/writeup.md)
+* [project_video.mp4](https://github.com/atinfinity/CarND-Advanced-Lane-Lines/blob/master/output_images/project_video.mp4)

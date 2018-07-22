@@ -259,18 +259,18 @@ And, I checked binary image. I found that shadowed lane region can not be extrac
 #### Identification of potential shortcomings
 I think that my current pipeline has shortcoming in the following condition.
 
-1. Weak to outliers
+1. Outliers
     - Current pipeline does not remove outliers. So, current pipeline is weak to outliers.
     - Current pipeline uses only current frame. So, current pipeline is weak to outliers.
-1. Change of illumination condition
     - Current pipeline uses color information to extract lane. But, lane can not be extracted correctly when illumination condition changes.
 
 #### Suggestion of possible improvements
 I suggest improvements to overcome mentioned shortcomings.
 
-1. Removal of outliers
-1. Use from prior frame
-1. Use other colorspace
+1. Sanity Check
+    - Current pipeline found some lines. Before moving on, pipeline should check that the detection makes sense.
+1. Smoothing
+    It can be preferable to smooth over the last n frames of video to obtain a cleaner result.
 
 ---
 
