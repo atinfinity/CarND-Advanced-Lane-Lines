@@ -270,7 +270,7 @@ I suggest improvements to overcome mentioned shortcomings.
 1. Sanity Check
     - Current pipeline found some lines. Before moving on, pipeline should check that the detection makes sense.
 1. Smoothing
-    It can be preferable to smooth over the last n frames of video to obtain a cleaner result.
+    - It can be preferable to smooth over the last n frames of video to obtain a cleaner result.
 
 ---
 
