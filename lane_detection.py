@@ -25,6 +25,24 @@ def combine_threshold(img, s_thresh=(170, 255), sx_thresh=(20, 100)):
 	l_channel = hls[:,:,1]
 	s_channel = hls[:,:,2]
 
+	# rgb thresholding for yellow
+	lower_rgb_yellow = np.uint8([  0, 180, 225])
+	upper_rgb_yellow = np.uint8([170, 255, 255])
+	mask_rgb_yellow = cv2.inRange(img, lower_rgb_yellow, upper_rgb_yellow)
+
+	# rgb thresholding for white
+	lower_rgb_yellow = np.array([200, 100, 100])
+	upper_rgb_yellow = np.array([255, 255, 255])
+	mask_rgb_white = cv2.inRange(img, lower_rgb_yellow, upper_rgb_yellow)
+
+	# hls thresholding for yellow
+	lower_hls_yellow = np.array([20, 120,  80])
+	upper_hls_yellow = np.array([45, 200, 255])
+	mask_yellow = cv2.inRange(hls, lower_hls_yellow, upper_hls_yellow)
+
+	color_binary = np.zeros_like(s_channel)
+	color_binary[(mask_rgb_yellow == 255)|(mask_rgb_white==255)|(mask_yellow==255)]= 1
+
 	# Sobel x
 	sobelx = cv2.Sobel(l_channel, cv2.CV_64F, 1, 0)
 	abs_sobelx = np.absolute(sobelx)
@@ -34,17 +52,11 @@ def combine_threshold(img, s_thresh=(170, 255), sx_thresh=(20, 100)):
 	sxbinary = np.zeros_like(scaled_sobel)
 	sxbinary[(scaled_sobel >= sx_thresh[0]) & (scaled_sobel <= sx_thresh[1])] = 1
 
-	# Threshold color channel
-	s_binary = np.zeros_like(s_channel)
-	s_binary[(s_channel >= s_thresh[0]) & (s_channel <= s_thresh[1])] = 1
-
 	# Combining threshold 
-	binary = np.zeros_like(sxbinary)
-	binary[(s_binary==1) | (sxbinary==1)] = 1
+	combined_binary = np.zeros_like(sxbinary)
+	combined_binary[(color_binary==1) | (sxbinary==1)] = 1
 
-	# Stack each channel
-	# color_binary = np.dstack(( np.zeros_like(sxbinary), sxbinary, s_binary)) * 255
-	return binary
+	return combined_binary
 
 def get_warp_points():
 	corners = np.float32([[253, 697], [585, 456], [700, 456], [1061, 690]])
