@@ -236,12 +236,47 @@ def draw_lanes(img, M_inv, left_fitx, right_fitx, ploty, left_curvature, right_c
 
 	return result
 
+def sanity_check(left_fitx, right_fitx, ploty):
+	thresh = 100
+	pts_left = np.vstack([left_fitx, ploty])
+	pts_right = np.vstack([right_fitx, ploty])
+
+	# check difference of lanes distanc
+	diff1 = abs((pts_right[0][0] - pts_left[0][0]) - (pts_right[0][359] - pts_left[0][359]))
+	diff2 = abs((pts_right[0][359] - pts_left[0][359]) - (pts_right[0][719] - pts_left[0][719]))
+	return (diff1 < thresh and diff2 < thresh)
+
+prev_left_fitx = []
+prev_right_fitx = []
+prev_left_curvature = 0.0
+prev_right_curvature = 0.0
+prev_lane_deviation = 0.0
+
 def pipeline(img, mtx, dist):
 	undistorted = undistort(img, mtx, dist)
 	binary = combine_threshold(undistorted)
 	src_points, dst_points = get_warp_points()
 	warped_binary, M, M_inv = perspective_transform(binary, src_points, dst_points)
 	left_fitx, right_fitx, ploty, left_fit, right_fit, left_curvature, right_curvature, lane_deviation, out_img = fit_polynomial(warped_binary)
+
+	is_good = sanity_check(left_fitx, right_fitx, ploty)
+
+	global prev_left_fitx, prev_right_fitx
+	global prev_left_curvature, prev_right_curvature, prev_lane_deviation
+	if is_good:
+		prev_left_fitx = left_fitx
+		prev_right_fitx = right_fitx
+		prev_left_curvature = left_curvature
+		prev_right_curvature = right_curvature
+		prev_lane_deviation = lane_deviation
+	else:
+		# use previous result
+		left_fitx = prev_left_fitx
+		right_fitx = prev_right_fitx
+		left_curvature = prev_left_curvature
+		right_curvature = prev_right_curvature
+		lane_deviation = prev_lane_deviation
+
 	lanes = draw_lanes(undistorted, M_inv, left_fitx, right_fitx, ploty, left_curvature, right_curvature,lane_deviation)
 	cv2.imshow('lane detection', lanes)
 
